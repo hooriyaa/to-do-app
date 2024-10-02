@@ -1,27 +1,32 @@
 "use client";
 import { useState } from "react";
 
+interface TodoItem {
+  list: string;
+  id: number;
+}
+
 export default function TodoApp() {
-  // define states
-  const [todo, setTodo] = useState([
+  // Define states
+  const [todo, setTodo] = useState<TodoItem[]>([
     { list: "learning next.js", id: 1 },
     { list: "watching movie", id: 2 },
   ]);
-  const [inputStat, setInput] = useState("");
-  const [id, setid] = useState(0);
-  const [expandedItems, setExpandedItems] = useState<number[]>([]); // To track expanded items
+  const [inputStat, setInput] = useState<string>("");
+  const [id, setId] = useState<number>(0);
+  const [expandedItems, setExpandedItems] = useState<number[]>([]); 
 
-  // add function
+  // Add function
   const addItem = () => {
     if (inputStat.trim() === "") return;
 
     if (id !== 0) {
-      let arr = todo.map((item) =>
+      const arr = todo.map((item) =>
         item.id === id ? { list: inputStat, id: id } : item
       );
       setTodo(arr);
       setInput("");
-      setid(0);
+      setId(0);
     } else {
       // Adding new item with a unique id
       const newId = new Date().getTime();
@@ -32,15 +37,17 @@ export default function TodoApp() {
 
   // Delete function
   const deleteItem = (id: number) => {
-    let arr = todo.filter((item) => item.id !== id);
-    setTodo([...arr]);
+    const arr = todo.filter((item) => item.id !== id);
+    setTodo(arr);
   };
 
   // Edit function
   const editItem = (id: number) => {
-    let obj: any = todo.find((item) => item.id === id);
-    setInput(obj.list);
-    setid(obj.id);
+    const obj = todo.find((item) => item.id === id);
+    if (obj) {
+      setInput(obj.list);
+      setId(obj.id);
+    }
   };
 
   // Toggle expanded/collapsed state
@@ -53,13 +60,13 @@ export default function TodoApp() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-5 md:p-10 mt-7 font-serif ">
-      {/* heading */}
+    <div className="max-w-4xl mx-auto p-5 md:p-10 mt-7 font-serif">
+      {/* Heading */}
       <h1 className="text-center md:text-[50px] text-3xl font-medium">
         To-do App
       </h1>
 
-      {/* input div */}
+      {/* Input div */}
       <div className="flex flex-wrap justify-between items-center mt-8 gap-3 md:gap-6">
         <input
           type="text"
@@ -72,7 +79,7 @@ export default function TodoApp() {
         {/* Add button */}
         <button
           onClick={addItem}
-          className="bg-blue-800 hover:bg-blue-900  duration-500 text-white px-7 py-3 rounded-xl w-full md:w-auto"
+          className="bg-blue-800 hover:bg-blue-900 duration-500 text-white px-7 py-3 rounded-xl w-full md:w-auto"
         >
           Add
         </button>
@@ -80,20 +87,18 @@ export default function TodoApp() {
 
       {/* Task lists */}
       <div className="mt-12">
-        <div className="grid grid-cols-1  gap-4 justify-center mt-4">
-          {todo.map((item: any, i: number) => {
+        <div className="grid grid-cols-1 gap-4 justify-center mt-4">
+          {todo.map((item, i) => {
             const isExpanded = expandedItems.includes(item.id);
             return (
               <div
-                className="border-2 shadow-sm bg-white  p-4 rounded-xl flex flex-wrap justify-between items-center gap-3"
-                key={i}
+                className="border-2 shadow-sm bg-white p-4 rounded-xl flex flex-wrap justify-between items-center gap-3"
+                key={item.id} // Use item.id as the key
               >
-                <span className="text-gray-800 font-medium text-lg">
-                  {i + 1}
-                </span>
+                <span className="text-gray-800 font-medium text-lg">{i + 1}</span>
 
                 {/* Toggle content based on expanded state */}
-                <div className="text-xl  text-gray-800 leading-7 break-words flex-1 overflow-hidden">
+                <div className="text-xl text-gray-800 leading-7 break-words flex-1 overflow-hidden">
                   {isExpanded ? (
                     <div>
                       {item.list}
